@@ -117,7 +117,7 @@ void drawRays3D()
 		// ---Check Vertical Lines---
 		dof = 0;
 		float nTan = -tan(ra);
-		if(ra>P2 && ra<P3)							// looking left
+		if(ra>P2 && ra<P3)					// looking left
 		{
 			rx = (((int)px>>6)<<6)-0.0001;
 			ry = (px-rx)*nTan + px;
@@ -125,7 +125,7 @@ void drawRays3D()
 			yo = -xo*nTan;
 		}
 		
-		if(ra<P2 || ra>P3)							// looking right
+		if(ra<P2 || ra>P3)    				// looking right
 		{
 			rx = (((int)px>>6)<<6)+64;
 			ry = (px-rx)*nTan + px;
