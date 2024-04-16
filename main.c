@@ -1,6 +1,6 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <GL/glut.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+#include "GL/glut.h"
 #include <math.h>
 #define PI 3.1415926535
 #define P2 PI/2
