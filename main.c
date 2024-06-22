@@ -1,5 +1,5 @@
- #include <stdio.h>
- #include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include "GL/glut.h"
 #include <math.h>
 #define PI 3.1415926535
@@ -56,6 +56,11 @@ void drawMap2D()
 	}
 }
 
+float dist(float ax, float ay, float bx, float by, float ang)
+{
+	return ( sqrt((bx-ax) * (bx-ax) + (by-ay) * (by-ay)) );
+}
+
 void drawRays3D()
 {
 	int r, mx, my, mp, dof;
@@ -65,8 +70,9 @@ void drawRays3D()
 	{
 		// ---Check Horizontal Lines ---
 		dof = 0;
+		float disH=1000000,hx=px,hy=py;
 		float aTan = -1/tan(ra);
-		if(ra>PI)                          // looking up
+		if(ra>PI)                          // looking down
 		{
 			ry = (((int)py>>6)<<6)-0.0001;
 			rx = (py-ry)*aTan + px;
@@ -74,7 +80,7 @@ void drawRays3D()
 			xo = -yo*aTan;
 		}
 		
-		if(ra<PI)                          // looking down
+		if(ra<PI)                          // looking up
 		{
 			ry = (((int)py>>6)<<6)+64;
 			rx = (py-ry)*aTan + px;
@@ -94,8 +100,11 @@ void drawRays3D()
 			my = (int) (ry) >> 6;
 			mp = my*mapX +mx;
 			// hit wall
-			if(mp<mapX*mapY && map[mp] == 1)
+			if(mp>0 && mp<mapX*mapY && map[mp] == 1)
 			{
+				hx=rx;
+				hy=ry;
+				disH=dist(px, py, hx, hy, ra);
 				dof=8; 
 			}
 			// next line
@@ -107,20 +116,21 @@ void drawRays3D()
 			}
 		}
 
-		glColor3f(0,1,0);
-		glLineWidth(10);
-		glBegin(GL_LINES);
-		glVertex2i(px, py);
-		glVertex2i(rx,ry);
-		glEnd();
+//		glColor3f(0,1,0);
+//		glLineWidth(2);
+//		glBegin(GL_LINES);
+//		glVertex2i(px, py);
+//		glVertex2i(rx,ry);
+//		glEnd();
 		
 		// ---Check Vertical Lines---
 		dof = 0;
+		float disV=1000000,vx=px,vy=py;
 		float nTan = -tan(ra);
 		if(ra>P2 && ra<P3)					// looking left
 		{
 			rx = (((int)px>>6)<<6)-0.0001;
-			ry = (px-rx)*nTan + px;
+			ry = (px-rx)*nTan + py;
 			xo = -64;
 			yo = -xo*nTan;
 		}
@@ -145,8 +155,11 @@ void drawRays3D()
 			my = (int) (ry) >> 6;
 			mp = my*mapX +mx;
 			// hit wall
-			if(mp<mapX*mapY && map[mp] == 1)
+			if(mp>0 && mp<mapX*mapY && map[mp] == 1)
 			{
+				vx=rx;
+				vy=ry;
+				disH=dist(px, py, vx, vy, ra);
 				dof=8; 
 			}
 			// next line
@@ -156,6 +169,18 @@ void drawRays3D()
 				ry+=yo;
 				dof+=1;
 			}
+		}
+		
+		if(disV<disH) 
+		{
+			rx=vx;
+			ry=vy;
+		}
+		
+		if(disH<disV)
+		{
+			rx=hx;
+			ry=hy;
 		}
 		
 		glColor3f(1,0,0);
